@@ -1,0 +1,357 @@
+%==============================================================================
+% tento soubor pouzijte jako zaklad
+% this file should be used as a base for the thesis
+% Autoři / Authors: 2008 Michal Bidlo, 2019 Jaroslav Dytrych
+% Kontakt pro dotazy a připomínky: sablona@fit.vutbr.cz
+% Contact for questions and comments: sablona@fit.vutbr.cz
+%==============================================================================
+% kodovani: UTF-8 (zmena prikazem iconv, recode nebo cstocs)
+% encoding: UTF-8 (you can change it by command iconv, recode or cstocs)
+%------------------------------------------------------------------------------
+% zpracování / processing: make, make pdf, make clean
+%==============================================================================
+% Soubory, které je nutné upravit nebo smazat: / Files which have to be edited or deleted:
+%   projekt-20-literatura-bibliography.bib - literatura / bibliography
+%   projekt-01-kapitoly-chapters.tex - obsah práce / the thesis content
+%   projekt-01-kapitoly-chapters-en.tex - obsah práce v angličtině / the thesis content in English
+%   projekt-30-prilohy-appendices.tex - přílohy / appendices
+%   projekt-30-prilohy-appendices-en.tex - přílohy v angličtině / appendices in English
+%==============================================================================
+%\documentclass[]{fitthesis} % bez zadání - pro začátek práce, aby nebyl problém s překladem
+%\documentclass[english]{fitthesis} % without assignment - for the work start to avoid compilation problem
+%\documentclass[zadani]{fitthesis} % odevzdani do wisu a/nebo tisk s barevnými odkazy - odkazy jsou barevné
+\documentclass[english,zadani]{fitthesis} % for submission to the IS FIT and/or print with color links - links are color
+%\documentclass[zadani,print]{fitthesis} % pro černobílý tisk - odkazy jsou černé
+%\documentclass[english,zadani,print]{fitthesis} % for the black and white print - links are black
+%\documentclass[zadani,cprint]{fitthesis} % pro barevný tisk - odkazy jsou černé, znak VUT barevný
+% \documentclass[english,zadani,cprint]{fitthesis} % for the print - links are black, logo is color
+% * Je-li práce psaná v anglickém jazyce, je zapotřebí u třídy použít 
+%   parametr english následovně:
+%   If thesis is written in English, it is necessary to use 
+%   parameter english as follows:
+%      \documentclass[english]{fitthesis}
+% * Je-li práce psaná ve slovenském jazyce, je zapotřebí u třídy použít 
+%   parametr slovak následovně:
+%   If the work is written in the Slovak language, it is necessary 
+%   to use parameter slovak as follows:
+%      \documentclass[slovak]{fitthesis}
+% * Je-li práce psaná v anglickém jazyce se slovenským abstraktem apod., 
+%   je zapotřebí u třídy použít parametry english a enslovak následovně:
+%   If the work is written in English with the Slovak abstract, etc., 
+%   it is necessary to use parameters english and enslovak as follows:
+%      \documentclass[english,enslovak]{fitthesis}
+
+% Základní balíčky jsou dole v souboru šablony fitthesis.cls
+% Basic packages are at the bottom of template file fitthesis.cls
+% zde můžeme vložit vlastní balíčky / you can place own packages here
+
+% Kompilace po částech (rychlejší, ale v náhledu nemusí být vše aktuální)
+% Compilation piecewise (faster, but not all parts in preview will be up-to-date)
+% \usepackage{subfiles}
+
+% Nastavení cesty k obrázkům
+% Setting of a path to the pictures
+%\graphicspath{{obrazky-figures/}{./obrazky-figures/}}
+%\graphicspath{{obrazky-figures/}{../obrazky-figures/}}
+
+%---rm---------------
+\renewcommand{\rmdefault}{lmr}%zavede Latin Modern Roman jako rm / set Latin Modern Roman as rm
+%---sf---------------
+\renewcommand{\sfdefault}{qhv}%zavede TeX Gyre Heros jako sf
+%---tt------------
+\renewcommand{\ttdefault}{lmtt}% zavede Latin Modern tt jako tt
+
+% vypne funkci šablony, která automaticky nahrazuje uvozovky,
+% aby nebyly prováděny nevhodné náhrady v popisech API apod.
+% disables function of the template which replaces quotation marks
+% to avoid unnecessary replacements in the API descriptions etc.
+\csdoublequotesoff
+
+
+
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{dirtree}
+% \usepackage[hyphens]{url}
+
+% \usepackage[table,xcdraw]{xcolor}
+
+
+
+% =======================================================================
+% balíček "hyperref" vytváří klikací odkazy v pdf, pokud tedy použijeme pdflatex
+% problém je, že balíček hyperref musí být uveden jako poslední, takže nemůže
+% být v šabloně
+% "hyperref" package create clickable links in pdf if you are using pdflatex.
+% Problem is that this package have to be introduced as the last one so it 
+% can not be placed in the template file.
+\ifWis
+\ifx\pdfoutput\undefined % nejedeme pod pdflatexem / we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex]{hyperref}
+  \definecolor{hrcolor-ref}{RGB}{223,52,30}
+  \definecolor{hrcolor-cite}{HTML}{2F8F00}
+  \definecolor{hrcolor-urls}{HTML}{092EAB}
+  \hypersetup{
+	linkcolor=hrcolor-ref,
+	citecolor=hrcolor-cite,
+	filecolor=magenta,
+	urlcolor=hrcolor-urls
+  }
+  \def\pdfBorderAttrs{/Border [0 0 0] }  % bez okrajů kolem odkazů / without margins around links
+  \pdfcompresslevel=9
+\fi
+\else % pro tisk budou odkazy, na které se dá klikat, černé / for the print clickable links will be black
+\ifx\pdfoutput\undefined % nejedeme pod pdflatexem / we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex,urlcolor=black,linkcolor=black,citecolor=black]{hyperref}
+  \definecolor{links}{rgb}{0,0,0}
+  \definecolor{anchors}{rgb}{0,0,0}
+  \def\AnchorColor{anchors}
+  \def\LinkColor{links}
+  \def\pdfBorderAttrs{/Border [0 0 0] } % bez okrajů kolem odkazů / without margins around links
+  \pdfcompresslevel=9
+\fi
+\fi
+% Řešení problému, kdy klikací odkazy na obrázky vedou za obrázek
+% This solves the problems with links which leads after the picture
+\usepackage[all]{hypcap}
+
+% Informace o práci/projektu / Information about the thesis
+%---------------------------------------------------------------------------
+\projectinfo{
+  %Prace / Thesis
+  project={DP},            %typ práce BP/SP/DP/DR  / thesis type (SP = term project)
+  year={2023},             % rok odevzdání / year of submission
+  date=\today,             % datum odevzdání / submission date
+  %Nazev prace / thesis title
+  title.cs={Automatické Oveřovaní Pravdivosti Dokumentů},  % název práce v češtině či slovenštině (dle zadání) / thesis title in czech language (according to assignment)
+  title.en={Automated Truth Discovery}, % název práce v angličtině / thesis title in english
+  %title.length={14.5cm}, % nastavení délky bloku s titulkem pro úpravu zalomení řádku (lze definovat zde nebo níže) / setting the length of a block with a thesis title for adjusting a line break (can be defined here or below)
+  %sectitle.length={14.5cm}, % nastavení délky bloku s druhým titulkem pro úpravu zalomení řádku (lze definovat zde nebo níže) / setting the length of a block with a second thesis title for adjusting a line break (can be defined here or below)
+  %dectitle.length={14.5cm}, % nastavení délky bloku s titulkem nad prohlášením pro úpravu zalomení řádku (lze definovat zde nebo níže) / setting the length of a block with a thesis title above declaration for adjusting a line break (can be defined here or below)
+  %Autor / Author
+  author.name={Jan},   % jméno autora / author name
+  author.surname={Kočí},   % příjmení autora / author surname 
+  author.title.p={Bc.}, % titul před jménem (nepovinné) / title before the name (optional)
+  %author.title.a={Ph.D.}, % titul za jménem (nepovinné) / title after the name (optional)
+  %Ustav / Department
+  department={UPGM}, % doplňte příslušnou zkratku dle ústavu na zadání: UPSY/UIFS/UITS/UPGM / fill in appropriate abbreviation of the department according to assignment: UPSY/UIFS/UITS/UPGM
+  % Školitel / supervisor
+  supervisor.name={Martin},   % jméno školitele / supervisor name 
+  supervisor.surname={Fajčík},   % příjmení školitele / supervisor surname
+  supervisor.title.p={Ing.},   %titul před jménem (nepovinné) / title before the name (optional)
+  %supervisor.title.a={},    %titul za jménem (nepovinné) / title after the name (optional)
+  % Klíčová slova / keywords
+  keywords.cs={Detekce fake news, zaujatost content-based metod, kredibilita článů, kredibilita zdrojů, interpretovatelný klasifikátor, zpracování přirozeného jazyka, strojové učení, neuronové sítě.}, % klíčová slova v českém či slovenském jazyce / keywords in czech or slovak language
+  keywords.en={Fake news detection, biases of content-based methods, credibility of articles, credibility of sources, interpretable classifier, natural language processing, machine learning, neural networks.}, % klíčová slova v anglickém jazyce / keywords in english
+  %keywords.en={Here, individual keywords separated by commas will be written in English.},
+  % Abstrakt / Abstract
+  abstract.cs={Cílem práce je (i) porozumět jaké vlastnosti textu jsou využívány content-based metodami při klasifikaci fake news a (ii) vyhodnotit kvality těchto metod na určování spolehlivosti článků a zdrojů. Práce implementuje dva klasifikační modely. První model (baseline), je založen na TF-IDF a Multinomial Naive Bayes klasifikátoru. Druhý model používá architekturu BERT transformeru. K interpretaci výsledků těchto modelů jsou v práci implementovány metody interpretability. Metoda interpretability pro BERT model je založena na Integrovaných gradientech. K trénování obou klasifikátorů je v práci použita datová sada NELA-GT-2021, která je předzpracována vyfiltrováním klíčových slov. V práci je také představena nová datová sada nazvaná FNI dataset. Tato sada obsahuje 46 manuálně vybraných článků a je použita k analýze klasifikátorů. FNI dataset umožňuje analyzovat klasifikátory na článcích z různých oblastí (například covid, fotbal, věda, politika, etc.). Výsledky analýzy odhalily několik nedostatků vytvořených klasifikátorů. Baseline model nebyl schopen správně klasifikovat nedůvěryhodné články na téma fotbal (recall 0\% na FNI datasetu), důvěryhodné vědecké články (recall 0\% na FNI datasetu), etc. Oba klasifikátory byly úspěšnější v identifikování nedůvěryhodných článků. BERT model dosáhl recall 91\% pro třídu unreliable a pouze 78\% pro třídu reliable na FNI datasetu. Metody interpretability dosahovaly také lepších výsledků na třídě unreliable kde se jim dařilo identifikovat šokující titulky používané ve fake news. Klasifikátory jsou také použity k určení důvěryhodnosti zdrojů. Jejich výsledky jsou srovnány s referenčními hodnotami získanými ze state-of-the-art metody, která posuzuje věrohodnost zdrojů na základě vzájemných citací. Jedním z výstupů práce je také challenge datová sada, obsahující články z NELA datasetu, které klasifikátory nedokázaly správně klasifikovat. Tato datová sada může být použita pro budoucí výzkum v tomto oboru.},
+  abstract.en={This thesis aims to (i) better understand the biases and cues exploited by content-based methods in the text of fake news articles and (ii) evaluate their performance in predicting the reliability of articles and media sources. Two different models are implemented. The baseline model uses TF-IDF and Multinomial Naive Bayes (MNB) classifier. The second model uses the BERT transformer. To study the cues exploited in the text a method of interpretability is implemented. While MNB is interpretable by design, the BERT model is analyzed through the Integrated gradients explainability method. Both classifiers were trained on a modified version of the NELA-GT-2021 dataset. This thesis suggests application of preprocessing to this dataset which could lead to creating a more robust classifier, e.g., removing keywords that provide simple cues. This thesis also presents a novel FNI dataset consisting of 46 manually selected articles. The FNI dataset enables topic-wise analysis (on topics such as covid, football, science, politics, etc.). The analysis revealed several biases of the classifiers. The baseline model was not able to identify unreliable articles about football (0\% recall on the FNI dataset), reliable scientific articles (0\% recall on the FNI dataset), etc. Both classifiers were more successful in identifying unreliable articles with the BERT classifier having a recall of 91\% on unreliable and only 78\% on reliable articles in the FNI dataset. The methods of interpretability also performed better on unreliable articles and were able to identify the sensationalism and shocking headlines used in fake news. The classifiers are also used to predict the credibility of sources. The results are compared with a state-of-the-art method that employs a different approach of using mutual citations of sources to predict their credibility. One of the outcomes of this thesis is also a new challenge set, containing articles from the NELA dataset on which the classifiers failed. This challenge set can be used for future research in this area.},
+  %abstract.en={An abstract of the work in English will be written in this paragraph.},
+  % Prohlášení (u anglicky psané práce anglicky, u slovensky psané práce slovensky) / Declaration (for thesis in english should be in english)
+  % declaration={Prohlašuji, že jsem tuto bakalářskou práci vypracoval samostatně pod vedením pana X...
+%Další informace mi poskytli...
+%Uvedl jsem všechny literární prameny, publikace a další zdroje, ze kterých jsem čerpal.},
+declaration={I hereby declare that this Master's thesis was prepared as an original work by the author under the supervision of Ing. Martin Fajčík. I have listed all the literary sources, publications and other sources, which were used during the preparation of this thesis.},
+  % Poděkování (nepovinné, nejlépe v jazyce práce) / Acknowledgement (optional, ideally in the language of the thesis)
+  %acknowledgment={V této sekci je možno uvést poděkování vedoucímu práce a těm, kteří poskytli odbornou pomoc
+% (externí zadavatel, konzultant apod.).},
+acknowledgment={I would like to thank my supervisor Ing. Martin Fajčík for his professional guidance and my girlfriend miss Žaneta Nováková, my family and friends for their support during the challenging years of my studies.},
+%(external submitter, consultant, etc.).},
+  % Rozšířený abstrakt (cca 3 normostrany) - lze definovat zde nebo níže / Extended abstract (approximately 3 standard pages) - can be defined here or below
+  %extendedabstract={Do tohoto odstavce bude zapsán rozšířený výtah (abstrakt) práce v českém (slovenském) jazyce.},
+  %extabstract.odd={true}, % Začít rozšířený abstrakt na liché stránce? / Should extended abstract start on the odd page?
+  %faculty={FIT}, % FIT/FEKT/FSI/FA/FCH/FP/FAST/FAVU/USI/DEF
+  faculty.cs={Fakulta informačních technologií}, % Fakulta v češtině - pro využití této položky výše zvolte fakultu DEF / Faculty in Czech - for use of this entry select DEF above
+  faculty.en={Faculty of Information Technology}, % Fakulta v angličtině - pro využití této položky výše zvolte fakultu DEF / Faculty in English - for use of this entry select DEF above
+  department.cs={Ústav matematiky}, % Ústav v češtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in Czech - for use of this entry select DEF above or comment it out
+  department.en={Institute of Mathematics} % Ústav v angličtině - pro využití této položky výše zvolte ústav DEF nebo jej zakomentujte / Department in English - for use of this entry select DEF above or comment it out
+}
+
+% Rozšířený abstrakt (cca 3 normostrany) - lze definovat zde nebo výše / Extended abstract (approximately 3 standard pages) - can be defined here or above
+\extendedabstract{Fake news jsou tvořeny články, záměrně napsanými tak, aby přenášely nepravdivé informace se záměrem ovlivnit jejich čtenáře pro své vlastní benefity. Existuje mnoho fact-checkingových služeb, které provádí manuální inspekci článků. Manuální kontrola však nestačí obsáhnout všechny články publikované každý den na internetu. Automatizace, nebo alespoň polo-automatizace těchto procesů je proto důležitým úkolem. Cílem této práce je vytvořit klasifikátor, schopný určit kredibilitu článků a zdrojů na internetu pouze za použití textu a vytvořit metodu interpretability, která pomáhá vysvětlit rozhodnutí klasifikátoru a porozumět tak, jaké vlastnosti textu jsou využívány content-based metodami při klasifikaci fake news. 
+
+Tato práce začíná popisem metod v minulosti aplikovaných k řešení daného problému určování kredibility článků a detekci fake news. Metody používané v této oblasti se dají rozdělit na knowledge-based, content-based a social context-based. Knowledge-based metody jsou založeny na extrakci tvrzení z textu a posuzování jejich kredibility na základě znalostní báze. Tyto metody jsou také známé pod názvem automatický fact-checking. Social context-based metody se nejčastěji používají na sociálních sítích, jelikož používají informace o uživatelích a jejich interakcí s jinými uživateli a obsahem na dané sociální síti. Za pomocí těchto informací poté modelují tendenci uživatelů k šíření nedůvěryhodných článků. Knowledge-based a social context-based metody však není možné aplikovat ve všech případech. Social context-based metody nelze aplikovat bez informací o uživatelích a jejich interakcí. Knowledge-based metody nemohou být použity například pokud daný článek pojednává o čerstvé události, kdy pro uvedené informace neexistuje nic ve znalostní bázi. Ve všech těchto případech je možné využít klasifikátor, který potřebuje k určení kredibility pouze text daného článku. Takový klasifikátor spadá do kategorie content-based metod.
+
+Po studiu metod následuje podrobná analýza dostupných datových sad. Datová sada vybraná pro trénování klasifikátorů je NELA-GT-2021. Tato datová sada je následně předzpracována vyfiltrováním klíčových slov (například názvů zdrojů) z textu a rozšířením jejích labelů z úrovně zdrojů na úroveň článků. Kromě této datové sady jsou v práci použity dvě další. První z nich je tzv. Merged dataset, který byl vytvořen spojením tří datových sad s labely na úrovni článků. Poslední použitou sadou je nová datová sada, vytvořena autorem této práce, nazvaná FNI dataset. Tato datová sada obsahuje 46 manuálně vybraných článků a slouží pro dodatečnou analýzu a evaluaci vytvořených klasifikátorů. Ke každému článku v této datové sadě je přiřazeno téma, které reflektuje jeho obsah. Pomocí takto definovaných témat jsou následně klasifikátory vyhodnoceny pro jejich schopnost správně klasifikovat články z různých oborů.
+
+Pro implementaci klasifikátorů byly zvoleny dvě metody. První metoda, známá jako baseline klasifikátor, je založena na TF-IDF a Multinomial Naive Bayes klasifikátoru. Metoda použitá k implementaci druhého klasifikátoru je založena na architektuře BERT transformeru. Obě metody jsou natrénovány na datové sadě NELA-GT-2021 a vyhodnoceny pomocí evaluačních metrik accuracy, precision, recall a F1 score. Výsledky analýzy odhalily několik nedostatků vytvořených modelů. Baseline model například nebyl schopen správně klasifikovat nedůvěryhodné články na téma fotbal (recall 0\% na FNI datasetu) a důvěryhodné vědecké články (recall 0\% na FNI datasetu). 
+
+Pro porozumění jaké části textu ovlivňují rozhodnutí klasifikátorů nejvíce jsou v práci vytvořeny dvě metody interpretability. Metoda interpretability pro baseline model určuje důležitost každého slova podle jeho podmíněné pravděpodobnosti pro každou třídu. Metoda interpretability pro BERT model je založena na Integrovaných gradientech. Výsledky interpretability jsou v práci vizualizovány. Jejich analýza odhalila například to, že oba klasifikátory jsou schopny identifikovat šokující titulky četně se vyskytující ve fake news článcích.
+
+Kromě schopnosti určování kredibility článků jsou klasifikátory aplikovány i na problém určení kredibility zdrojů, které tyto články publikují. Porovnání výsledků s referenčními hodnotami, získanými ze state-of-the-art metody založené na vzájemných citacích zdrojů, odhalilo vysoký Kendall rank korelační koeficient a tedy potvrdilo, že je možné klasifikátory úspěšně aplikovat i na predikci kredibility zdrojů. Jedním z výstupů práce je také challenge datová sada, obsahující články z NELA datasetu, které ani jeden z klasifikátorů nedokázal správně klasifikovat. V závěru práce shrnuje dosažené výsledky a nabízí možnosti pro další směřování výzkumu v daném odvětví.}
+% Začít rozšířený abstrakt na liché stránce? / Should extended abstract start on the odd page?
+%\extabstractodd{true}
+
+% nastavení délky bloku s titulkem pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a thesis title for adjusting a line break - can be defined here or above
+%\titlelength{14.5cm}
+% nastavení délky bloku s druhým titulkem pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a second thesis title for adjusting a line break - can be defined here or above
+%\sectitlelength{14.5cm}
+% nastavení délky bloku s titulkem nad prohlášením pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a thesis title above declaration for adjusting a line break - can be defined here or above
+%\dectitlelength{14.5cm}
+
+% řeší první/poslední řádek odstavce na předchozí/následující stránce
+% solves first/last row of the paragraph on the previous/next page
+\clubpenalty=10000
+\widowpenalty=10000
+
+% checklist
+\newlist{checklist}{itemize}{1}
+\setlist[checklist]{label=$\square$}
+
+% Nechcete-li, aby se u oboustranného tisku roztahovaly mezery pro zaplnění stránky, odkomentujte následující řádek / If you do not want enlarged spacing for filling of the pages in case of duplex printing, uncomment the following line
+% \raggedbottom
+
+\begin{document}
+  % Vysazeni titulnich stran / Typesetting of the title pages
+  % ----------------------------------------------
+  \maketitle
+  % Obsah
+  % ----------------------------------------------
+  \setlength{\parskip}{0pt}
+
+  {\hypersetup{hidelinks}\tableofcontents}
+  
+  % Seznam obrazku a tabulek (pokud prace obsahuje velke mnozstvi obrazku, tak se to hodi)
+  % List of figures and list of tables (if the thesis contains a lot of pictures, it is good)
+  \ifczech
+    \renewcommand\listfigurename{Seznam obrázků}
+  \fi
+  \ifslovak
+    \renewcommand\listfigurename{Zoznam obrázkov}
+  \fi
+  % {\hypersetup{hidelinks}\listoffigures}
+  
+  \ifczech
+    \renewcommand\listtablename{Seznam tabulek}
+  \fi
+  \ifslovak
+    \renewcommand\listtablename{Zoznam tabuliek}
+  \fi
+  % {\hypersetup{hidelinks}\listoftables}
+
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+
+  % vynechani stranky v oboustrannem rezimu
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Text prace / Thesis text
+  % ----------------------------------------------
+  \ifenglish
+    \input{projekt-01-kapitoly-chapters-en}
+  \else
+    \input{projekt-01-kapitoly-chapters}
+  \fi
+  
+  % Kompilace po částech (viz výše, nutno odkomentovat)
+  % Compilation piecewise (see above, it is necessary to uncomment it)
+  %\subfile{projekt-01-uvod-introduction}
+  % ...
+  %\subfile{chapters/projekt-05-conclusion}
+
+
+  % Pouzita literatura / Bibliography
+  % ----------------------------------------------
+\ifslovak
+  \makeatletter
+  \def\@openbib@code{\addcontentsline{toc}{chapter}{Literatúra}}
+  \makeatother
+  \bibliographystyle{bib-styles/Pysny/skplain}
+\else
+  \ifczech
+    \makeatletter
+    \def\@openbib@code{\addcontentsline{toc}{chapter}{Literatura}}
+    \makeatother
+    \bibliographystyle{bib-styles/Pysny/czplain}
+  \else 
+    \makeatletter
+    \def\@openbib@code{\addcontentsline{toc}{chapter}{Bibliography}}
+    \makeatother
+    \bibliographystyle{bib-styles/Pysny/enplain}
+  %  \bibliographystyle{alpha}
+  \fi
+\fi
+  \begin{flushleft}
+  \bibliography{projekt-20-literatura-bibliography}
+  \end{flushleft}
+
+  % vynechani stranky v oboustrannem rezimu
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Prilohy / Appendices
+  % ---------------------------------------------
+  \appendix
+\ifczech
+  \renewcommand{\appendixpagename}{Přílohy}
+  \renewcommand{\appendixtocname}{Přílohy}
+  \renewcommand{\appendixname}{Příloha}
+\fi
+\ifslovak
+  \renewcommand{\appendixpagename}{Prílohy}
+  \renewcommand{\appendixtocname}{Prílohy}
+  \renewcommand{\appendixname}{Príloha}
+\fi
+%  \appendixpage
+
+% vynechani stranky v oboustrannem rezimu
+% Skip the page in the two-sided mode
+%\iftwoside
+%  \cleardoublepage
+%\fi
+  
+\ifslovak
+%  \section*{Zoznam príloh}
+%  \addcontentsline{toc}{section}{Zoznam príloh}
+\else
+  \ifczech
+%    \section*{Seznam příloh}
+%    \addcontentsline{toc}{section}{Seznam příloh}
+  \else
+%    \section*{List of Appendices}
+%    \addcontentsline{toc}{section}{List of Appendices}
+  \fi
+\fi
+  \startcontents[chapters]
+  \setlength{\parskip}{0pt} 
+  % seznam příloh / list of appendices
+  % \printcontents[chapters]{l}{0}{\setcounter{tocdepth}{2}}
+  
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+  
+  % vynechani stranky v oboustrannem rezimu
+  \iftwoside
+    \cleardoublepage
+  \fi
+  
+  % Přílohy / Appendices
+  \ifenglish
+    \input{projekt-30-prilohy-appendices-en}
+  \else
+    \input{projekt-30-prilohy-appendices}
+  \fi
+  
+  % Kompilace po částech (viz výše, nutno odkomentovat)
+  % Compilation piecewise (see above, it is necessary to uncomment it)
+  %\subfile{projekt-30-prilohy-appendices}
+  
+\end{document}
